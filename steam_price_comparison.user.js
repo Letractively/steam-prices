@@ -67,5 +67,8 @@ function stateChanged() {
           "<br>UK: " + price[1] + 
           "<br>EU: " + price[2];
     }
+    
+    //Remove cookie that may store the wrong currency for this region
+    document.cookie = "fakeCC=; expires=Fri, 27 Jul 2001 02:47:11 UTC; path=/";
   }
 }
