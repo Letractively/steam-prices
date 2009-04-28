@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name           Steam price comparison
-// @namespace      FIXME
+// @namespace      http://code.google.com/p/steam-prices/
 // @description    Displays prices from all regions in the Steam webshop
 // @include        http://store.steampowered.com/app/*
 // @include        https://store.steampowered.com/app/*
