@@ -1,21 +1,18 @@
 #labels Featured
 == Alternative shops ==
 
-There are lots of great alternative shops. My current favourite is [http://www.gog.com/ gog.com]. They sell [http://en.wikipedia.org/wiki/Digital_rights_management#.22DRM-Free.22 DRM-free] PC classics for low prices ($6 and $10) with no regional discrimination. They have a huge catalogue of good old games from every genre and publish at least two more every week.
+There are lots of great alternative shops. My current favourite is [http://www.gog.com/ GOG.com]. They sell [http://en.wikipedia.org/wiki/Digital_rights_management#.22DRM-Free.22 DRM-free] PC classics for low prices ($6 and $10) with no regional discrimination. They have a huge catalogue of good old games from every genre and publish at least two more every week.
 
 [http://www.gog.com/ http://i219.photobucket.com/albums/cc285/jmoviedb/wht_468x60.jpg]
 
-Steamunpowered has [http://www.steamunpowered.eu/page.php?al=altshops a list of alternative shops] that don't use regional restrictions.
 
+Many of the indie games available at Steam can also be purchased from indie publisher [http://www.playgreenhouse.com/ greenhouse]. This download store is a owned by [http://www.penny-arcade.com/ Penny Arcade] and Hothead Games. They don't use regional pricing, and their prices are generally equal to Steam's North American prices - which means that they're much cheaper than Steam for EU customers. They even have their own achievements system called "Triumphs and standings" if you're into that sort of thing.
 
-== Indie games ==
-A great exaple is indie publisher [http://www.playgreenhouse.com/ greenhouse]. This download store is a owned by [http://www.penny-arcade.com/ Penny Arcade] and Hothead Games, Hothead are also the develpers of Penny Arcade's episodic adventure game series [http://rainslick.com/ "On the Rain-Slick Precipice of Darkness"]. Greenhouse publishes several other indie titles as well, some in competition with Steam. They have their own achievements system called "Triumphs and standings" if you're into that sort of thing. Unfortunately they do use DRM but luckily aren't dicks about it, you can install as many times as you want "within reason". They use the same prices no matter where you live.
+Many games can also be purchased directly from the developers, most at much lower prices than Steam's European store. Some examples:
+ * [http://www.playgreenhouse.com/game/HOTHG-000001-01/ On the Rain-Slick Precipice of Darkness]
+ * [http://www.telltalegames.com/samandmax Sam & Max], [http://www.telltalegames.com/bone Bone], [http://www.telltalegames.com/wallaceandgromit Wallace & Gromit], [http://www.telltalegames.com/strongbad Strong Bad's Cool Game for Attractive People] and Telltale Texas Hold'em all available at Telltale Games.
+ * [http://2dboy.com/games.php World of Goo]
+ * [http://www.crayonphysics.com/ Crayon Physics Deluxe]
+ * [http://www.bit-blot.com/aquaria/index.html Aquaria]
 
-If you're into indie games or at least willing to try one you may want to look into some of these great titles, which I can personally recommend:
- * *On the Rain-Slick Precipice of Darkness* - mentioned above. Available on [http://store.steampowered.com/app/18000/ Steam], [http://www.playgreenhouse.com/game/HOTHG-000001-01/ greenhouse] (Cheaper on greenhouse if you're European) plus Xbox 360 and PS3.
- * *World of Goo* - available on [http://store.steampowered.com/app/22000/ Steam], [http://www.playgreenhouse.com/game/TDBOY-000001-01/ greenhouse] and [http://2dboy.com/games.php the developer's own site]. For European customers it is cheaper from the two latter sources, if you buy directly from the developer you get it DRM-free. This game is also available on the Wii.
- * *The Maw* - available on [http://store.steampowered.com/app/26000/ Steam] and [http://www.playgreenhouse.com/game/TWSPX-000001-01/ greenhouse]. Again, cheaper from greenhouse if you live in Europe. This game is also available on Xbox 360.
- * *Crayon Physics Deluxe* - available DRM-free from [http://www.crayonphysics.com/ the developer's own site], and also available for iPhone.
-There are of course lots of other great titles that I haven't had the chance to try. Seek, and ye shall find.
-
-Indie developers like these are of course not backed by huge corporations like EA Games, so don't be an asshole and pirate their games. They are usually very cheap and often DRM-free, so there is no reason to pirate them in any case.
+If you're interested in games that are more mainstream, check  [http://www.steamunpowered.eu/page.php?al=altshops Steamunpowered's list of alternative shops] that don't use regional restrictions.
