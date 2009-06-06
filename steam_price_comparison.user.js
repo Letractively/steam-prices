@@ -73,7 +73,7 @@ function stateChanged() {
     var priceHtml = new Array(3);
     var usvaluepattern = new RegExp(/&#36;([\d\.]+)$/i);
     var ukvaluepattern = new RegExp(/&#163;([\d\.]+)$/i);
-    var euvaluepattern = new RegExp(/([\d,]+)&#8364;$/i);
+    var euvaluepattern = new RegExp(/([\d,-]+)&#8364;$/i);
     var price = new Array(3);
     
     var calcscript = "function getDifference(currency, usdPrice, localPrice) {\n" +
@@ -103,7 +103,7 @@ function stateChanged() {
       try {price[1] = parseFloat(ukvaluepattern.exec(priceHtml[1])[1]);}
       catch(err) {price[1] = null;}
       try {price[2] = 
-          parseFloat(euvaluepattern.exec(priceHtml[2])[1].replace(",", "."));}
+          parseFloat(euvaluepattern.exec(priceHtml[2])[1].replace(",", ".").replace("--", "00"));}
       catch(err) {price[2] = null;}
       
       pricenodes[i].innerHTML =           
