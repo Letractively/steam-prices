@@ -1,4 +1,5 @@
 #summary How to configure the script
+#labels Featured
 
 == Introduction ==
 The script can be configured by editing the file in a plain text editor like Notepad.
@@ -7,11 +8,11 @@ The script can be configured by editing the file in a plain text editor like Not
 If set to true, UK prices will be displayed. If false, they will not. If you have low bandwidth or a high latency internet connection, changing this setting to false may increase performance, as less data will have to be fetched.
 
 == showTieredEuPrices ==
-If set to true, the script will display prices from all three of Valve's price regions, or "tiers". If false, the script will show only your conuntry's prices. More details on the tiers can be found [http://steamunpowered.eu/page.php?id=139 here]. For games where prices are equal in all regions, the script will display only one value no matter what this setting is configured to.
+If set to true, the script will display prices from all three of Valve's price regions, or "tiers". If false, the script will show only your country's prices. More details on the tiers can be found [http://steamunpowered.eu/page.php?id=139 here]. For games where prices are equal in all regions, the script will display only one value no matter what this setting is configured to.
 
 If you have low bandwidth or a high latency internet connection, changing this setting to false may increase performance, as less data will have to be fetched. If you find that the script does not display the correct prices for your country or region, changing this setting to false should fix that.
 
-The three settings tier1cc, tier2cc and tier3cc contain country codes for regions representative of each of the three price regions. Change at your own discretion
+The three settings tier1cc, tier2cc and tier3cc contain country codes for regions representative of each of the three price zones. These can be changed in case Valve decides to change the zones.
 
 == usVat ==
-When set to a value higher than zero, VAT will be added to the US price. E.g. if set to 19, the script will increase US prices by 19%.
+When set to a value higher than zero, VAT will be added to the US price. E.g. if set to 19, the script will increase US prices by 19%. 0 is the default setting and means no VAT.
