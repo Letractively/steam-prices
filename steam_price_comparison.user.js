@@ -20,7 +20,7 @@ var showUkPrice = true;
 /*
  * If set to true, the script will display prices from all three of Valve's
  * price regions, or "tiers". If false, the script will show only your 
- * conuntry's prices. More details on the tiers can be found here:
+ * country's prices. More details on the tiers can be found here:
  * http://steamunpowered.eu/page.php?id=139
  * For games where prices are equal in all regions, the script will display 
  * only one value no matter what this setting is configured to.
