@@ -1,0 +1,6 @@
+#summary How to configure the script
+
+== Introduction ==
+The script can be configured by editing the file in a plain text editor like Notepad.
+
+== More stuff ==
