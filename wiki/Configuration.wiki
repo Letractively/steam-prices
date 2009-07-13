@@ -12,7 +12,7 @@ If set to _true_, the script will display prices from all three of Valve's price
 
 If you have low bandwidth or a high latency internet connection, changing this setting to _false_ may increase performance, as less data will have to be fetched. If you find that the script does not display the correct prices for your country or region, changing this setting to _false_ should fix that.
 
-Note: If set to _false_, the script will assume that you are located in Europe, and that Steam displays prices in euro by default. If you live in a country where Steam does not use euro as a currency, you should keep this setting at _true_.
+Note: If set to _false_, the script will assume that you are located in Europe, and that Steam displays prices in euro by default. If you live in a country where Steam does not use euro as a currency, you should keep this setting at _true_ (the default setting).
 
 The three settings tier1cc, tier2cc and tier3cc contain country codes for regions representative of each of the three price zones. These can be changed in case Valve decides to change the zones.
 
