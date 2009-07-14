@@ -46,7 +46,7 @@ def get_exchangerate(a, b):
       return None
 
     #Search for the relevant string
-    regex = re.compile('class=bld>([\d\.]+)&nbsp;', re.IGNORECASE)
+    regex = re.compile('class=bld>([\d\.]+)\s', re.IGNORECASE)
     match = regex.search(result.content)
     if not match:
       return None
