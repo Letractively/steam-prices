@@ -8,13 +8,13 @@ The script can be configured by editing the file in a plain text editor like Not
 If set to _true_, UK prices will be displayed. If _false_, they will not. If you have low bandwidth or a high latency internet connection, changing this setting to _false_ may increase performance, as less data will have to be fetched.
 
 == showTieredEuPrices ==
-If set to _true_, the script will display prices from all three of Valve's price regions, or "tiers". If _false_, the script will show only your country's prices. More details on the tiers can be found [http://steamunpowered.eu/page.php?id=139 here]. For games where prices are equal in all regions, the script will display only one value no matter what this setting is configured to.
+If set to _true_, the script will display prices from Valve's two price regions, or "tiers". If _false_, the script will show only your country's prices. More details on the tiers can be found [http://steamunpowered.eu/european-tiers/ here]. For games where prices are equal in both tiers, the script will display only one value no matter what this setting is configured to.
 
 If you have low bandwidth or a high latency internet connection, changing this setting to _false_ may increase performance, as less data will have to be fetched. If you find that the script does not display the correct prices for your country or region, changing this setting to _false_ should fix that.
 
 Note: If set to _false_, the script will assume that you are located in Europe, and that Steam displays prices in euro by default. If you live in a country where Steam does not use euro as a currency, you should keep this setting at _true_ (the default setting).
 
-The three settings tier1cc, tier2cc and tier3cc contain country codes for regions representative of each of the three price zones. These can be changed in case Valve decides to change the zones.
+The settings tier1cc and tier2cc contain country codes for regions representative of each of the two price zones. These can be changed in case Valve decides to change the zones.
 
 == usVat ==
 When set to a value higher than zero, VAT will be added to the US price. E.g. if set to _19_, the script will increase US prices by 19%. _0_ is the default setting and means no VAT.
