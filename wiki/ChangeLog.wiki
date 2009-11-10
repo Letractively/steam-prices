@@ -5,5 +5,5 @@
 || Version || Date || Description ||
 || 1.0.0 || 29 Apr 2009 || Original version. ||
 || 1.0.1 || 6 Jun 2009 || Bugfix: Fixed behaviour when prices are written with dashes (5,--€). ||
-|| 1.1.0 || 12 Jun 2009 || Added support for tiered EU prices, configurable VAT on US prices, and an option for disabling UK prices. ||
+|| 1.1.0 || 12 Jun 2009 || Enhancement: Added support for tiered EU prices, configurable VAT on US prices, and an option for disabling UK prices. ||
 || 1.1.1 || 14 Jul 2009 || Bugfix: Server side change to fix incompatibility with an update in Google Finance's HTML code. ||
