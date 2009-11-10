@@ -1,4 +1,4 @@
-#summary Change Log
+#summary Summary of updates and changes
 #labels Featured
 
 == Change Log ==
