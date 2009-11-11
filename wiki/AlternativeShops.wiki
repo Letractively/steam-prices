@@ -8,6 +8,8 @@ There are lots of great alternative shops. My current favourite is [http://www.g
 
 Many of the indie games available at Steam can also be purchased from indie publisher [http://www.playgreenhouse.com/ greenhouse]. This download store is a owned by [http://www.penny-arcade.com/ Penny Arcade] and Hothead Games. They don't use regional pricing, and their prices are generally equal to those in Steam's North American store - which means that they're much cheaper than Steam for European customers. They even have their own achievements system called "Triumphs and standings" if you're into that sort of thing.
 
+If you're interested in games that are more mainstream, check  [http://steamunpowered.eu/steam-alternatives/ Steamunpowered's list of alternative shops] that don't use regional restrictions.
+
 === Buy directly from the developers ===
 Many games can also be purchased directly from the developers, most at much lower prices than Steam's European store. This is not a comprehensive list, these are examples only:
  * [http://www.playgreenhouse.com/game/HOTHG-000001-01/ On the Rain-Slick Precipice of Darkness] episodes one and two
@@ -15,9 +17,6 @@ Many games can also be purchased directly from the developers, most at much lowe
  * [http://2dboy.com/games.php World of Goo]
  * [http://www.crayonphysics.com/ Crayon Physics Deluxe]
  * [http://www.bit-blot.com/aquaria/index.html Aquaria]
- * [http://store.futuremark.com/shop/buy_shatteredhorizon.jsp Shattered Horizon]
  * [http://tale-of-tales.com/Fatale/ Fatale], [http://tale-of-tales.com/ThePath/ The Path], [http://tale-of-tales.com/TheGraveyard/ The Graveyard]
  * [http://machinarium.net/ Machinarium] (includes MP3 soundtrack) 
-
-
-If you're interested in games that are more mainstream, check  [http://steamunpowered.eu/steam-alternatives/ Steamunpowered's list of alternative shops] that don't use regional restrictions.
+I highly recommend checking the developer's website when you buy independent games like these. Not only do you get lower prices, but you also ensure that a bigger share of the money you pay goes straight to the developer. Win-win!
