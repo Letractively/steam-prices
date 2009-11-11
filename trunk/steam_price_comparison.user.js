@@ -1,11 +1,19 @@
 // ==UserScript==
-// @name           Steam price comparison
-// @namespace      http://code.google.com/p/steam-prices/
-// @description    Displays prices from all regions in the Steam webshop
-// @include        http://store.steampowered.com/app/*
-// @include        https://store.steampowered.com/app/*
-// @include        http://store.steampowered.com/sub/*
-// @include        https://store.steampowered.com/sub/*
+// @name         Steam price comparison
+// @version      1.1.2
+// @namespace    http://code.google.com/p/steam-prices/
+// @description  Displays prices from all regions in the Steam webshop
+// @copyright    2009+, Tor (http://code.google.com/p/steam-prices/)
+// @homepage     http://code.google.com/p/steam-prices/
+// @license      MIT License; http://www.opensource.org/licenses/mit-license.php
+// @include      http://store.steampowered.com/app/*
+// @include      https://store.steampowered.com/app/*
+// @include      http://store.steampowered.com/sub/*
+// @include      https://store.steampowered.com/sub/*
+// @match        http://store.steampowered.com/app/*
+// @match        https://store.steampowered.com/app/*
+// @match        http://store.steampowered.com/sub/*
+// @match        https://store.steampowered.com/sub/*
 // ==/UserScript==
 
 /* 
@@ -18,7 +26,7 @@
 var showUkPrice = true;
 
 /*
- * If set to true, the script will display prices from all three of Valve's
+ * If set to true, the script will display prices from both of Valve's
  * price regions, or "tiers". If false, the script will show only your 
  * country's prices. More details on the tiers can be found here:
  * http://steamunpowered.eu/page.php?id=139
@@ -27,10 +35,9 @@ var showUkPrice = true;
  */
 var showTieredEuPrices = true;
 
-//These parameters contain one country code from each of the three tiers.
+//These parameters contain one country code from each of the European tiers.
 var tier1cc = "se";
 var tier2cc = "no";
-var tier3cc = "lt";
 
 //Change this parameter to add VAT to the US price displayed.
 //E.g. if set to 19, the script will increase US prices by 19%.
@@ -43,21 +50,26 @@ var usVat = 0;
  
  
 
-var urlGamePattern = new RegExp(/^https?:\/\/store.steampowered.com\/app\/\d+\/?$/i);
-var urlPackagePattern = new RegExp(/^https?:\/\/store.steampowered.com\/sub\/\d+\/?$/i);
+var urlGamePattern = 
+  new RegExp(/^https?:\/\/store.steampowered.com\/app\/\d+\/?$/i);
+var urlPackagePattern = 
+  new RegExp(/^https?:\/\/store.steampowered.com\/sub\/\d+\/?$/i);
 var usHttp;
 var ukHttp;
 var eu1Http;
 var eu2Http;
-var eu3Http;
 var pricenodes = new Array();
 var originalprices = new Array();
 var ukscript;
 var euscript;
 var someNode;
-var tier1text = "Albania, Andorra, Austria, Belgium, Denmark, Finland, France, Germany, Ireland, Liechtenstein, Luxembourg, Macedonia, Netherlands, Sweden, Switzerland";
-var tier2text = "Bosnia and Herzegovina, Bulgaria, Croatia, Cyprus, Czech Republic, Greece, Hungary, Italy, Malta, Monaco, Montenegro, Norway, Poland, Portugal, Romania, San Marino, Serbia, Slovakia, Slovenia, Spain, Vatican City";
-var tier3text = "Estonia, Latvia, Lithuania";
+var tier1text = "Albania, Andorra, Austria, Belgium, Denmark, Finland, " + 
+  "France, Germany, Ireland, Liechtenstein, Luxembourg, Macedonia, " + 
+  "Netherlands, Sweden, Switzerland";
+var tier2text = "Bosnia and Herzegovina, Bulgaria, Croatia, Cyprus, " + 
+  "Czech Republic, Estonia, Greece, Hungary, Italy, Latvia, Lithuania, " + 
+  "Malta, Monaco, Montenegro, Norway, Poland, Portugal, Romania, San Marino, " +
+  "Serbia, Slovakia, Slovenia, Spain, Vatican City";
 
 //Test the URL to see if we're on a game page
 if (urlGamePattern.test(document.documentURI) || 
@@ -94,8 +106,19 @@ if (urlGamePattern.test(document.documentURI) ||
     }
   }
   
-  //If the current page contains a price, start downloading regional versions of this page
+  //If the current page contains a price, 
+  //start downloading regional versions of this page
   if (pricenodes.length > 0) {
+    //Create cookie that prevents the age verification 
+    //dialog from breaking the script
+    if (document.cookie.indexOf("birthtime") < 0) { //Check if cookie exists
+      var date = new Date();
+		  date.setTime(date.getTime()+(365*24*60*60*1000));//Expires in 365 days
+      document.cookie = "birthtime=1; expires=" //birthtime is set to 1 Jan 1900
+        + date.toGMTString() + "; path=/"
+    }
+    
+    //Set up HTTP requests
     usHttp = new XMLHttpRequest();
     usHttp.onreadystatechange=stateChanged;
     usHttp.open("GET",document.documentURI+"?cc=us",true);
@@ -117,10 +140,6 @@ if (urlGamePattern.test(document.documentURI) ||
       eu2Http.onreadystatechange=stateChanged;
       eu2Http.open("GET",document.documentURI+"?cc="+tier2cc,true);
       eu2Http.send(null);
-      eu3Http = new XMLHttpRequest();
-      eu3Http.onreadystatechange=stateChanged;
-      eu3Http.open("GET",document.documentURI+"?cc="+tier3cc,true);
-      eu3Http.send(null);
     }
   }
 }
@@ -131,26 +150,32 @@ function stateChanged() {
   if (usHttp.readyState != 4) return;
   if (showUkPrice && ukHttp.readyState != 4) return;
   if (showTieredEuPrices && (eu1Http.readyState != 4 || 
-      eu2Http.readyState != 4 || eu3Http.readyState != 4)) return;
+      eu2Http.readyState != 4)) return;
 
   //All requests completed, good to go
   
   //The pattern variables can't be reused for some reason, so just duplucate
-  var pricepattern0 = new RegExp(/<div class="game_area_purchase_price">(.+?)<\/div>/gi);
-  var pricepattern1 = new RegExp(/<div class="game_area_purchase_price">(.+?)<\/div>/gi);
-  var pricepattern2 = new RegExp(/<div class="game_area_purchase_price">(.+?)<\/div>/gi);
-  var pricepattern3 = new RegExp(/<div class="game_area_purchase_price">(.+?)<\/div>/gi);
-  var pricepattern4 = new RegExp(/<div class="game_area_purchase_price">(.+?)<\/div>/gi);
-  var pricepattern5 = new RegExp(/<div class="game_area_purchase_price">(.+?)<\/div>/gi);
-  var priceHtml = new Array(5);
+  var pricepattern0 = 
+    new RegExp(/<div class="game_area_purchase_price">(.+?)<\/div>/gi);
+  var pricepattern1 = 
+    new RegExp(/<div class="game_area_purchase_price">(.+?)<\/div>/gi);
+  var pricepattern2 = 
+    new RegExp(/<div class="game_area_purchase_price">(.+?)<\/div>/gi);
+  var pricepattern3 = 
+    new RegExp(/<div class="game_area_purchase_price">(.+?)<\/div>/gi);
+  var pricepattern4 = 
+    new RegExp(/<div class="game_area_purchase_price">(.+?)<\/div>/gi);
+
+  var priceHtml = new Array(4);
   var mypriceHtml;
   var usvaluepattern = new RegExp(/&#36;([\d\.]+)$/i);
   var ukvaluepattern = new RegExp(/&#163;([\d\.]+)$/i);
   var euvaluepattern = new RegExp(/([\d,-]+)&#8364;$/i);
-  var price = new Array(3);
+  var price = new Array(4);
   var myprice;
     
-  var calcscript = "function getDifference(currency, usdPrice, localPrice) {\n" +
+  var calcscript = "function getDifference(currency, usdPrice, localPrice) " + 
+      "{\n" +
       "  var usdConverted; var lessmore; var diff;\n" +
       "  if (currency == 'GBP') {usdConverted = USDtoGBP(usdPrice);}\n" +
       "  else if (currency == 'EUR') {usdConverted = USDtoEUR(usdPrice);}\n" +
@@ -169,10 +194,12 @@ function stateChanged() {
       try {
         var myvaluepattern = new RegExp(/([\d,-]+).$/i);
         mypriceHtml = originalprices[i];
-        myprice = parseFloat(myvaluepattern.exec(originalprices[i])[1].replace(",", ".").replace("--", "00"));
+        myprice = parseFloat(myvaluepattern.exec(originalprices[i]
+          )[1].replace(",", ".").replace("--", "00"));
       }
       catch(err) {
-        mypriceHtml = "N/A";
+        if (!mypriceHtml || mypriceHtml.length == 0)
+          mypriceHtml = "N/A";
         myprice = null;
       }
     }
@@ -187,7 +214,8 @@ function stateChanged() {
       }
     }
     catch(err) {
-      priceHtml[0] = "N/A";
+      if (!priceHtml[0] || priceHtml[0].length == 0)
+        priceHtml[0] = "N/A";
       price[0] = null;
     }
     pricenodes[i].innerHTML = "US: " + priceHtml[0];
@@ -200,7 +228,8 @@ function stateChanged() {
         price[1] = parseFloat(ukvaluepattern.exec(priceHtml[1])[1]);
       }
       catch(err) {
-        priceHtml[1] = "N/A";
+        if (!priceHtml[1] || priceHtml[1].length == 0)
+          priceHtml[1] = "N/A";
         price[1] = null;
       }
       pricenodes[i].innerHTML += "<br>UK: " + priceHtml[1] 
@@ -209,38 +238,43 @@ function stateChanged() {
       createGetDifferenceScript("gbp" + i, "GBP", price[0], price[1]);
     }
     if (showTieredEuPrices) {
-      try {priceHtml[2] = pricepattern3.exec(eu1Http.responseText)[1];}
-      catch(err) {priceHtml[2] = "N/A";}
-      try {priceHtml[3] = pricepattern4.exec(eu2Http.responseText)[1];}
-      catch(err) {priceHtml[3] = "N/A";}
-      try {priceHtml[4] = pricepattern5.exec(eu3Http.responseText)[1];}
-      catch(err) {priceHtml[4] = "N/A";}
+      try {
+        priceHtml[2] = pricepattern3.exec(eu1Http.responseText)[1];
+      }
+      catch(err) {
+        if (!priceHtml[2] || priceHtml[2].length == 0)
+          priceHtml[2] = "N/A";
+      }
+      try {
+        priceHtml[3] = pricepattern4.exec(eu2Http.responseText)[1];
+      }
+      catch(err) {
+        if (!priceHtml[3] || priceHtml[3].length == 0)
+          priceHtml[3] = "N/A";
+      }
       
       var t;
-      for (t = 2; t < 5; t++) {
+      for (t = 2; t < 4; t++) {
         try {price[t] = parseFloat(euvaluepattern.exec(
             priceHtml[t])[1].replace(",", ".").replace("--", "00"));}
         catch(err) {price[t] = null;}
       }
       
-      if ((price[2] == price[3]) && (price[3] == price[4])) {
+      //If tier 1 and 2 prices are equal, display only one EU price
+      if (price[2] == price[3]) {
         pricenodes[i].innerHTML += "<br>EU: " + priceHtml[2] 
             + " <span id='eur1_" + i + "'></span>";
-      } else {
+      } else { //...but if they differ, display both
         pricenodes[i].innerHTML += "<br><span title='" + tier1text
             + "'>EU tier 1: " + priceHtml[2] 
             + " <span id='eur1_" + i + "'></span></span>";
         pricenodes[i].innerHTML += "<br><span title='" + tier2text
             + "'>EU tier 2: " + priceHtml[3] 
             + " <span id='eur2_" + i + "'></span></span>";
-        pricenodes[i].innerHTML += "<br><span title='" + tier3text
-            + "'>EU tier 3: " + priceHtml[4] 
-            + " <span id='eur3_" + i + "'></span></span>";
       }
       createGetDifferenceScript("eur1_" + i, "EUR", price[0], price[2]);
       createGetDifferenceScript("eur2_" + i, "EUR", price[0], price[3]);
-      createGetDifferenceScript("eur3_" + i, "EUR", price[0], price[4]);
-    } else {
+    } else {//Ignore country codes, only display price for YOUR region
       pricenodes[i].innerHTML += "<br>You: " + mypriceHtml 
             + " <span id='myprice" + i + "'></span>";
       createGetDifferenceScript("myprice" + i, "EUR", price[0], myprice);
@@ -255,8 +289,9 @@ function createGetDifferenceScript(elementid, currencystring, price1, price2) {
   if (price1 && price2) {
     var getdiff = document.createElement("script");
     getdiff.setAttribute("type", "text/javascript");
-    getdiff.innerHTML = "document.getElementById('" + elementid +
-        "').innerHTML = getDifference('" + currencystring + "', " + price1 + 
+    getdiff.innerHTML = "var node = document.getElementById('" + elementid 
+      + "');" + "if (node)"
+      + "node.innerHTML = getDifference('" + currencystring + "', " + price1 + 
         ", " + price2 + ");";
     document.body.insertBefore(getdiff, someNode);
   }
