@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Steam price comparison
-// @version      1.1.2
+// @version      1.1.3
 // @namespace    http://code.google.com/p/steam-prices/
 // @description  Displays prices from all regions in the Steam webshop
 // @copyright    2009+, Tor (http://code.google.com/p/steam-prices/)
@@ -35,6 +35,10 @@ var showUkPrice = true;
  */
 var showTieredEuPrices = true;
 
+
+//If set to true, AU prices will be displayed (in addition to US and EU prices)
+var showAUPrice = true;
+
 //These parameters contain one country code from each of the European tiers.
 var tier1cc = "se";
 var tier2cc = "no";
@@ -58,10 +62,12 @@ var usHttp;
 var ukHttp;
 var eu1Http;
 var eu2Http;
+var auHttp;
 var pricenodes = new Array();
 var originalprices = new Array();
 var ukscript;
 var euscript;
+var auscript;
 var someNode;
 var tier1text = "Albania, Andorra, Austria, Belgium, Denmark, Finland, " + 
   "France, Germany, Ireland, Liechtenstein, Luxembourg, Macedonia, " + 
@@ -86,12 +92,23 @@ if (urlGamePattern.test(document.documentURI) ||
         "http://javascriptexchangerate.appspot.com/?from=USD&to=GBP");
     document.body.insertBefore(ukscript, someNode);
   }
-          
+            
   euscript = document.createElement("script");
   euscript.setAttribute("type", "text/javascript");
   euscript.setAttribute("src", 
       "http://javascriptexchangerate.appspot.com/?from=USD&to=EUR");
   document.body.insertBefore(euscript, someNode);
+
+  /* not needed, since price is in USD for the Australian site
+	   but converting to USD to USD will let us change the script easily 
+     in case the Australian steam site moves to AUD */
+/*  if (showAUPrice) {
+    auscript = document.createElement("script");
+    auscript.setAttribute("type", "text/javascript");
+    auscript.setAttribute("src", 
+        "http://javascriptexchangerate.appspot.com/?from=USD&to=USD");
+    document.body.insertBefore(auscript, someNode);
+  }*/
 
   //Test to see if the game has a price
   divnodes = document.getElementsByTagName("div");
@@ -130,7 +147,7 @@ if (urlGamePattern.test(document.documentURI) ||
       ukHttp.open("GET",document.documentURI+"?cc=uk",true);
       ukHttp.send(null);
     }
-  
+	 
     if (showTieredEuPrices) {
       eu1Http = new XMLHttpRequest();
       eu1Http.onreadystatechange=stateChanged;
@@ -141,6 +158,14 @@ if (urlGamePattern.test(document.documentURI) ||
       eu2Http.open("GET",document.documentURI+"?cc="+tier2cc,true);
       eu2Http.send(null);
     }
+	
+    if (showAUPrice) {
+      auHttp = new XMLHttpRequest();
+      auHttp.onreadystatechange=stateChanged;
+      auHttp.open("GET",document.documentURI+"?cc=au",true);
+      auHttp.send(null);
+    }
+
   }
 }
 
@@ -152,9 +177,10 @@ function stateChanged() {
   if (showTieredEuPrices && (eu1Http.readyState != 4 || 
       eu2Http.readyState != 4)) return;
 
+  if (showAUPrice && auHttp.readyState != 4) return;
   //All requests completed, good to go
   
-  //The pattern variables can't be reused for some reason, so just duplucate
+  //The pattern variables can't be reused for some reason, so just duplicate
   var pricepattern0 = 
     new RegExp(/<div class="game_area_purchase_price">(.+?)<\/div>/gi);
   var pricepattern1 = 
@@ -165,13 +191,16 @@ function stateChanged() {
     new RegExp(/<div class="game_area_purchase_price">(.+?)<\/div>/gi);
   var pricepattern4 = 
     new RegExp(/<div class="game_area_purchase_price">(.+?)<\/div>/gi);
+  var pricepattern5 = 
+    new RegExp(/<div class="game_area_purchase_price">(.+?)<\/div>/gi);
 
-  var priceHtml = new Array(4);
+  var priceHtml = new Array(5);
   var mypriceHtml;
   var usvaluepattern = new RegExp(/&#36;([\d\.]+)$/i);
   var ukvaluepattern = new RegExp(/&#163;([\d\.]+)$/i);
   var euvaluepattern = new RegExp(/([\d,-]+)&#8364;$/i);
-  var price = new Array(4);
+  var auvaluepattern = new RegExp(/&#36;([\d\.]+)[\s]USD/i);
+  var price = new Array(5);
   var myprice;
     
   var calcscript = "function getDifference(currency, usdPrice, localPrice) " + 
@@ -179,6 +208,8 @@ function stateChanged() {
       "  var usdConverted; var lessmore; var diff;\n" +
       "  if (currency == 'GBP') {usdConverted = USDtoGBP(usdPrice);}\n" +
       "  else if (currency == 'EUR') {usdConverted = USDtoEUR(usdPrice);}\n" +
+//	  "  else if (currency == 'USD') {usdConverted = USDtoUSD(usdPrice);}\n" +
+      "  else if (currency == 'USD') {usdConverted = usdPrice;}\n" +
       "  diff = Math.abs((localPrice/usdConverted)*100-100);\n" +
       "  if (localPrice >= usdConverted) {lessmore = 'higher';}\n" +
       "  else {lessmore = 'lower';}\n" +
@@ -237,6 +268,8 @@ function stateChanged() {
       
       createGetDifferenceScript("gbp" + i, "GBP", price[0], price[1]);
     }
+
+	
     if (showTieredEuPrices) {
       try {
         priceHtml[2] = pricepattern3.exec(eu1Http.responseText)[1];
@@ -278,6 +311,22 @@ function stateChanged() {
       pricenodes[i].innerHTML += "<br>You: " + mypriceHtml 
             + " <span id='myprice" + i + "'></span>";
       createGetDifferenceScript("myprice" + i, "EUR", price[0], myprice);
+    }
+	
+    if (showAUPrice) {
+      try {
+        priceHtml[4] = pricepattern5.exec(auHttp.responseText)[1];
+        price[4] = parseFloat(auvaluepattern.exec(priceHtml[4])[1]);
+      }
+      catch(err) {
+        if (!priceHtml[4] || priceHtml[4].length == 0)
+          priceHtml[4] = "N/A";
+        price[4] = null;
+      }
+      pricenodes[i].innerHTML += "<br>AU: " + priceHtml[4] 
+          + " <span id='aud" + i + "'></span>"
+      
+      createGetDifferenceScript("aud" + i, "USD", price[0], price[4]);
     }
   }
   
