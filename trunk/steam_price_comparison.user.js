@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Steam price comparison
-// @version      1.1.3
+// @version      1.1.4
 // @namespace    http://code.google.com/p/steam-prices/
 // @description  Displays prices from all regions in the Steam webshop
 // @copyright    2009+, Tor (http://code.google.com/p/steam-prices/)
