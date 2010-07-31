@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Steam price comparison
-// @version      1.1.4
+// @version      1.2.0
 // @namespace    http://code.google.com/p/steam-prices/
 // @description  Displays prices from all regions in the Steam webshop
 // @copyright    2009+, Tor (http://code.google.com/p/steam-prices/)
@@ -21,6 +21,9 @@
  * If you want to modify the parameters of the script, 
  * please make your changes here.
  */
+
+//If set to true, will show the monetary difference instead of percent difference
+var showValueDifference = false;
 
 //If set to true, UK prices will be displayed (in addition to US and EU prices)
 var showUkPrice = true;
@@ -53,11 +56,11 @@ var usVat = 0;
  */
  
  
-
+var weHaveSale = false;
 var urlGamePattern = 
-  new RegExp(/^https?:\/\/store.steampowered.com\/app\/\d+\/?$/i);
+  new RegExp(/^https?:\/\/store.steampowered.com\/app\/\d+/i);
 var urlPackagePattern = 
-  new RegExp(/^https?:\/\/store.steampowered.com\/sub\/\d+\/?$/i);
+  new RegExp(/^https?:\/\/store.steampowered.com\/sub\/\d+/i);
 var usHttp;
 var ukHttp;
 var eu1Http;
@@ -78,8 +81,9 @@ var tier2text = "Bosnia and Herzegovina, Bulgaria, Croatia, Cyprus, " +
   "Serbia, Slovakia, Slovenia, Spain, Vatican City";
 
 //Test the URL to see if we're on a game page
-if (urlGamePattern.test(document.documentURI) || 
-      urlPackagePattern.test(document.documentURI)) {
+if ((urlGamePattern.test(document.documentURI) || 
+      urlPackagePattern.test(document.documentURI)) && 
+      !window.location.search.match("cc=")) {
   someNode = document.getElementById("global_header");
 
   //For security reasons, JavaScript code isn't allowed to fetch data from
@@ -91,6 +95,11 @@ if (urlGamePattern.test(document.documentURI) ||
     ukscript.setAttribute("src", 
         "http://javascriptexchangerate.appspot.com/?from=USD&to=GBP");
     document.body.insertBefore(ukscript, someNode);
+    ukscript2 = document.createElement("script");
+    ukscript2.setAttribute("type", "text/javascript");
+    ukscript2.setAttribute("src", 
+        "http://javascriptexchangerate.appspot.com/?from=GBP&to=USD");
+    document.body.insertBefore(ukscript2, someNode);
   }
             
   euscript = document.createElement("script");
@@ -98,6 +107,11 @@ if (urlGamePattern.test(document.documentURI) ||
   euscript.setAttribute("src", 
       "http://javascriptexchangerate.appspot.com/?from=USD&to=EUR");
   document.body.insertBefore(euscript, someNode);
+  euscript2 = document.createElement("script");
+  euscript2.setAttribute("type", "text/javascript");
+  euscript2.setAttribute("src", 
+      "http://javascriptexchangerate.appspot.com/?from=EUR&to=USD");
+  document.body.insertBefore(euscript2, someNode);
 
   /* not needed, since price is in USD for the Australian site
      but converting to USD to USD will let us change the script easily 
@@ -113,7 +127,17 @@ if (urlGamePattern.test(document.documentURI) ||
   //Test to see if the game has a price
   divnodes = document.getElementsByTagName("div");
   for (i=0; i<divnodes.length; i++) {
-    if (divnodes[i].getAttribute("class") == "game_purchase_price price") {
+	if (divnodes[i].getAttribute("class") == "discount_block game_purchase_discount") {
+	  divnodes[i].setAttribute("class","game_purchase_price price");
+	  weHaveSale = true;
+	  pricenodes.push(divnodes[i]);
+	  if (!showTieredEuPrices)
+	    originalprices.push(divnodes[i].innerHTML);
+      divnodes[i].innerHTML = "<span style='color: rgb(136, 136, 136);'>Computing...</span>";
+      divnodes[i].style.textAlign = "left";
+    }
+    else if (divnodes[i].getAttribute("class") == "game_purchase_price price") {
+	  weHaveSale = false;
       pricenodes.push(divnodes[i]);
       if (!showTieredEuPrices)
         originalprices.push(divnodes[i].innerHTML);
@@ -136,33 +160,40 @@ if (urlGamePattern.test(document.documentURI) ||
     }
     
     //Set up HTTP requests
+    var baseURL;
+    if (window.location.search) {
+      baseURL = document.documentURI + "&";
+    } else {
+      baseURL = document.documentURI + "?";
+    }
+    
     usHttp = new XMLHttpRequest();
     usHttp.onreadystatechange=stateChanged;
-    usHttp.open("GET",document.documentURI+"?cc=us",true);
+    usHttp.open("GET",baseURL+"cc=us",true);
     usHttp.send(null);
   
     if (showUkPrice) {
       ukHttp = new XMLHttpRequest();
       ukHttp.onreadystatechange=stateChanged;
-      ukHttp.open("GET",document.documentURI+"?cc=uk",true);
+      ukHttp.open("GET",baseURL+"cc=uk",true);
       ukHttp.send(null);
     }
    
     if (showTieredEuPrices) {
       eu1Http = new XMLHttpRequest();
       eu1Http.onreadystatechange=stateChanged;
-      eu1Http.open("GET",document.documentURI+"?cc="+tier1cc,true);
+      eu1Http.open("GET",baseURL+"cc="+tier1cc,true);
       eu1Http.send(null);
       eu2Http = new XMLHttpRequest();
       eu2Http.onreadystatechange=stateChanged;
-      eu2Http.open("GET",document.documentURI+"?cc="+tier2cc,true);
+      eu2Http.open("GET",baseURL+"cc="+tier2cc,true);
       eu2Http.send(null);
     }
   
     if (showAUPrice) {
       auHttp = new XMLHttpRequest();
       auHttp.onreadystatechange=stateChanged;
-      auHttp.open("GET",document.documentURI+"?cc=au",true);
+      auHttp.open("GET",baseURL+"cc=au",true);
       auHttp.send(null);
     }
 
@@ -195,18 +226,39 @@ function stateChanged() {
   //All requests completed, good to go
   
   //The pattern variables can't be reused for some reason, so just duplicate
-  var pricepattern0 = 
-    new RegExp(/<div class="game_purchase_price price">([^<]+?)<\/div>/gi);
-  var pricepattern1 = 
-    new RegExp(/<div class="game_purchase_price price">([^<]+?)<\/div>/gi);
-  var pricepattern2 = 
-    new RegExp(/<div class="game_purchase_price price">([^<]+?)<\/div>/gi);
-  var pricepattern3 = 
-    new RegExp(/<div class="game_purchase_price price">([^<]+?)<\/div>/gi);
-  var pricepattern4 = 
-    new RegExp(/<div class="game_purchase_price price">([^<]+?)<\/div>/gi);
-  var pricepattern5 = 
-    new RegExp(/<div class="game_purchase_price price">([^<]+?)<\/div>/gi);
+  //The pattern variables can't be reused for some reason, so just duplicate
+  if(weHaveSale == true)
+  {
+	  var salepattern =
+		new RegExp(/<div class="discount_pct">([^<]+?)<\/div>/gi);
+	  var pricepattern0 = 
+		new RegExp(/<div class="discount_final_price">([^<]+?)<\/div>/gi);
+	  var pricepattern1 = 
+		new RegExp(/<div class="discount_final_price">([^<]+?)<\/div>/gi);
+	  var pricepattern2 = 
+		new RegExp(/<div class="discount_final_price">([^<]+?)<\/div>/gi);
+	  var pricepattern3 = 
+		new RegExp(/<div class="discount_final_price">([^<]+?)<\/div>/gi);
+	  var pricepattern4 = 
+		new RegExp(/<div class="discount_final_price">([^<]+?)<\/div>/gi);
+	  var pricepattern5 = 
+		new RegExp(/<div class="discount_final_price">([^<]+?)<\/div>/gi);
+  }
+  else
+  {
+	  var pricepattern0 = 
+		new RegExp(/<div class="game_purchase_price price">([^<]+?)<\/div>/gi);
+	  var pricepattern1 = 
+		new RegExp(/<div class="game_purchase_price price">([^<]+?)<\/div>/gi);
+	  var pricepattern2 = 
+		new RegExp(/<div class="game_purchase_price price">([^<]+?)<\/div>/gi);
+	  var pricepattern3 = 
+		new RegExp(/<div class="game_purchase_price price">([^<]+?)<\/div>/gi);
+	  var pricepattern4 = 
+		new RegExp(/<div class="game_purchase_price price">([^<]+?)<\/div>/gi);
+	  var pricepattern5 = 
+		new RegExp(/<div class="game_purchase_price price">([^<]+?)<\/div>/gi);
+  }
 
   var priceHtml = new Array(5);
   var mypriceHtml;
@@ -216,18 +268,25 @@ function stateChanged() {
   var auvaluepattern = new RegExp(/&#36;([\d\.]+)[\s]USD/i);
   var price = new Array(5);
   var myprice;
+  var sale;
     
   var calcscript = "function getDifference(currency, usdPrice, localPrice) " + 
       "{\n" +
-      "  var usdConverted; var lessmore; var diff;\n" +
-      "  if (currency == 'GBP') {usdConverted = USDtoGBP(usdPrice);}\n" +
-      "  else if (currency == 'EUR') {usdConverted = USDtoEUR(usdPrice);}\n" +
-//    "  else if (currency == 'USD') {usdConverted = USDtoUSD(usdPrice);}\n" +
-      "  else if (currency == 'USD') {usdConverted = usdPrice;}\n" +
-      "  diff = Math.abs((localPrice/usdConverted)*100-100);\n" +
-      "  if (localPrice >= usdConverted) {lessmore = 'higher';}\n" +
-      "  else {lessmore = 'lower';}\n" +
-      "  return ' (' + Math.round(diff) + '% ' + lessmore + ')';}\n";
+      "  var showValueDifference = "+showValueDifference+"; var usdForeign; var usdConverted; var lessmore; var diff;\n" +
+      "  if (currency == 'GBP') {usdConverted = USDtoGBP(usdPrice); usdForeign = GBPtoUSD(localPrice); }\n" +
+      "  else if (currency == 'EUR') {usdConverted = USDtoEUR(usdPrice); usdForeign = EURtoUSD(localPrice); }\n" +
+//    "  else if (currency == 'USD') {usdConverted = USDtoUSD(usdPrice); usdForeign = USDtoUSD(localPrice); }\n" +
+      "  else if (currency == 'USD') {usdConverted = usdPrice; usdForeign = localPrice; }\n" +
+	  "  if (showValueDifference == true) {\n" +
+	  "    if(usdForeign != usdPrice) {return ' ($' + (Math.round((Math.max(usdForeign,usdPrice)-Math.min(usdForeign,usdPrice))*100)/100) + ' More)'; }\n" +
+	  "    else { return ' (Equal)'; }\n" +
+	  "  } else {\n" +
+      "    diff = Math.abs((localPrice/usdConverted)*100-100);\n" +
+      "    if (localPrice >= usdConverted) {lessmore = 'higher';}\n" +
+      "    else {lessmore = 'lower';}\n" +
+      "    return ' (' + Math.round(diff) + '% ' + lessmore + ')';\n" +
+	  "  }"+
+	  "}";
   
   var calculatescript = document.createElement("script");
   calculatescript.setAttribute("type", "text/javascript");
@@ -252,6 +311,8 @@ function stateChanged() {
     //Search for the price information in the downloaded HTML documents
     try {
       priceHtml[0] = pricepattern1.exec(usHttp.responseText)[1];
+	  if(weHaveSale == true)
+		sale = salepattern.exec(usHttp.responseText)[1];
       price[0] = parseFloat(usvaluepattern.exec(priceHtml[0])[1]);
       if (usVat > 0) {
         price[0] = price[0] * (1 + (usVat / 100));
@@ -261,13 +322,20 @@ function stateChanged() {
     catch(err) {
       //Prevent search from looping around and starting at the beginning
         if (err.message.search("responseText\\) is null") != -1) {
-          usHttp = null; priceHtml[0] = "N/A";
+          usHttp = null; priceHtml[0] = "N/A"; sale = "N/A";
         }
-      if (!priceHtml[0] || priceHtml[0].length == 0)
-        priceHtml[0] = "N/A";
+      if (!priceHtml[0] || priceHtml[0].length == 0) {
+        priceHtml[0] = "N/A"; sale = "N/A";
+	  }
       price[0] = null;
     }
-    pricenodes[i].innerHTML = "US: " + priceHtml[0];
+	
+	if(weHaveSale == true) 
+		pricenodes[i].innerHTML = "<div class='discount_pct'>"+sale+"</div>";
+	else
+		pricenodes[i].innerHTML = "";
+
+    pricenodes[i].innerHTML += "US: " + priceHtml[0];
     if (usVat > 0)
       pricenodes[i].innerHTML += " (inc. VAT)"; 
     
@@ -362,6 +430,7 @@ function stateChanged() {
       
       createGetDifferenceScript("aud" + i, "USD", price[0], price[4]);
     }
+
   }
   
   //Remove cookie that may store the wrong currency for this region
